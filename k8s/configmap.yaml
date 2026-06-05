@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: users-api-config
+  namespace: fcg
+data:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  ASPNETCORE_URLS: "http://+:8080"
+  JwtSettings__Issuer: "FCG.UsersAPI"
+  JwtSettings__Audience: "FCG.Services"
+  JwtSettings__ExpirationHours: "8"
+  RabbitMq__Host: "rabbitmq"
+  RabbitMq__Port: "5672"
+  RabbitMq__VirtualHost: "/"
+  Swagger__Enabled: "true"
