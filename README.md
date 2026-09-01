@@ -1,41 +1,41 @@
-﻿> **Nota:** Esta e a copia independente do microsservico **UsersAPI** gerada por split-repos.ps1 a partir do monorepo TechChallenge-Fiap-FCG. Shared/ foi embedded em ./shared/. Build local: docker build -t fcg-users-api . (da raiz deste repo).
+> **Nota:** Esta e a copia independente do microsservico **UsersAPI** gerada por split-repos.ps1 a partir do monorepo TechChallenge-Fiap-FCG. Shared/ foi embedded em ./shared/. Build local: docker build -t fcg-users-api . (da raiz deste repo).
 
 ---
 
-# UsersAPI â€” FCG MicrosserviÃ§o de UsuÃ¡rios
+# UsersAPI — FCG Microsserviço de Usuários
 
-MicrosserviÃ§o responsÃ¡vel por **cadastro, autenticaÃ§Ã£o (JWT)** e **autorizaÃ§Ã£o** de usuÃ¡rios da FIAP Cloud Games. Ã‰ a fonte de verdade de identidade â€” emite tokens que sÃ£o validados localmente pelos demais microsserviÃ§os.
+Microsserviço responsável por **cadastro, autenticação (JWT)** e **autorização** de usuários da FIAP Cloud Games. É a fonte de verdade de identidade — emite tokens que são validados localmente pelos demais microsserviços.
 
 ---
 
 ## Responsabilidades
 
-- Cadastrar/atualizar/excluir (soft delete) usuÃ¡rios
-- Login com geraÃ§Ã£o de JWT (HS256, 8h de validade)
-- RecuperaÃ§Ã£o e reset de senha via token de uso Ãºnico (1h)
-- Publicar `UserCreatedEvent` no broker apÃ³s registro bem-sucedido
+- Cadastrar/atualizar/excluir (soft delete) usuários
+- Login com geração de JWT (HS256, 8h de validade)
+- Recuperação e reset de senha via token de uso único (1h)
+- Publicar `UserCreatedEvent` no broker após registro bem-sucedido
 
-## NÃ£o Ã© responsabilidade
+## Não é responsabilidade
 
-- Validar existÃªncia de usuÃ¡rio a pedido de outros serviÃ§os (eles confiam no JWT)
-- Persistir histÃ³rico de logins / auditoria
+- Validar existência de usuário a pedido de outros serviços (eles confiam no JWT)
+- Persistir histórico de logins / auditoria
 
 ---
 
 ## Endpoints
 
-| MÃ©todo | Rota | Auth | DescriÃ§Ã£o |
+| Método | Rota | Auth | Descrição |
 |---|---|---|---|
-| POST | `/api/auth/register` | pÃºblico | Cria usuÃ¡rio; publica `UserCreatedEvent` |
-| POST | `/api/auth/login` | pÃºblico | Retorna JWT + dados do usuÃ¡rio |
-| GET | `/api/auth/user/{id}` | pÃºblico | Detalha um usuÃ¡rio (sem dados sensÃ­veis) |
-| POST | `/api/auth/recuperar-senha` | pÃºblico | Gera token de reset (1h) |
-| POST | `/api/auth/resetar-senha` | pÃºblico | Aplica nova senha usando o token |
-| GET | `/api/usuarios` | autenticado | Lista usuÃ¡rios (admins veem todos) |
-| GET | `/api/usuarios/{id}` | autenticado | Detalha (admin OU prÃ³prio usuÃ¡rio) |
-| PUT | `/api/usuarios/{id}` | autenticado | Atualiza (admin OU prÃ³prio usuÃ¡rio) |
+| POST | `/api/auth/register` | público | Cria usuário; publica `UserCreatedEvent` |
+| POST | `/api/auth/login` | público | Retorna JWT + dados do usuário |
+| GET | `/api/auth/user/{id}` | público | Detalha um usuário (sem dados sensíveis) |
+| POST | `/api/auth/recuperar-senha` | público | Gera token de reset (1h) |
+| POST | `/api/auth/resetar-senha` | público | Aplica nova senha usando o token |
+| GET | `/api/usuarios` | autenticado | Lista usuários (admins veem todos) |
+| GET | `/api/usuarios/{id}` | autenticado | Detalha (admin OU próprio usuário) |
+| PUT | `/api/usuarios/{id}` | autenticado | Atualiza (admin OU próprio usuário) |
 | DELETE | `/api/usuarios/{id}` | role Admin | Soft delete |
-| GET | `/health` | pÃºblico | Health check |
+| GET | `/health` | público | Health check |
 
 Swagger UI em `/swagger` quando `Swagger__Enabled=true`.
 
@@ -43,22 +43,22 @@ Swagger UI em `/swagger` quando `Swagger__Enabled=true`.
 
 | Evento | Quando | Payload |
 |---|---|---|
-| `UserCreatedEvent` | ApÃ³s `POST /api/auth/register` ser persistido | `MessageId, OccurredAt, UserId, Name, Email, Role` |
+| `UserCreatedEvent` | Após `POST /api/auth/register` ser persistido | `MessageId, OccurredAt, UserId, Name, Email, Role` |
 
 Consumidores conhecidos: **NotificationsAPI** (envia e-mail de boas-vindas).
 
 ## Eventos consumidos
 
-Nenhum â€” UsersAPI Ã© publisher-only.
+Nenhum — UsersAPI é publisher-only.
 
 ---
 
-## VariÃ¡veis de ambiente
+## Variáveis de ambiente
 
-| VariÃ¡vel | Default | DescriÃ§Ã£o |
+| Variável | Default | Descrição |
 |---|---|---|
-| `ConnectionStrings__DefaultConnection` | `Host=localhost;Database=users_db;...` | Postgres do serviÃ§o |
-| `JwtSettings__Secret` | dev placeholder | **MÃ­nimo 32 caracteres**. DistribuÃ­do via Secret no K8s |
+| `ConnectionStrings__DefaultConnection` | `Host=localhost;Database=users_db;...` | Postgres do serviço |
+| `JwtSettings__Secret` | dev placeholder | **Mínimo 32 caracteres**. Distribuído via Secret no K8s |
 | `JwtSettings__Issuer` | `FCG.UsersAPI` | Issuer do token |
 | `JwtSettings__Audience` | `FCG.Services` | Audience dos consumidores |
 | `JwtSettings__ExpirationHours` | `8` | TTL do token |
@@ -71,12 +71,12 @@ Nenhum â€” UsersAPI Ã© publisher-only.
 
 ## Como rodar localmente
 
-### PrÃ©-requisitos
+### Pré-requisitos
 
 - .NET 10 SDK (ou superior conforme PDF)
-- Postgres rodando (use `Orchestration/docker-compose.yml` para subir sÃ³ `postgres` e `rabbitmq`)
+- Postgres rodando (use `Orchestration/docker-compose.yml` para subir só `postgres` e `rabbitmq`)
 
-### Subir sÃ³ a infra e rodar a API com `dotnet run`
+### Subir só a infra e rodar a API com `dotnet run`
 
 ```powershell
 docker compose -f ..\Orchestration\docker-compose.yml up -d postgres rabbitmq
@@ -84,7 +84,7 @@ dotnet run --project src/FCG.Users.Api
 # Swagger: http://localhost:5001/swagger (porta vem de launchSettings ou da env)
 ```
 
-### Rodar em contÃªiner
+### Rodar em contêiner
 
 ```powershell
 # Da raiz do repo
@@ -112,10 +112,10 @@ kubectl port-forward svc/users-api -n fcg 5001:8080
 dotnet test  # (tests aparecem na fase 5)
 ```
 
-## DecisÃµes arquiteturais
+## Decisões arquiteturais
 
-- **EF Core + `EnsureCreated()` no startup** â€” para o desafio acadÃªmico, evita o ritual de migrations. Em produÃ§Ã£o: migrar para `Database.Migrate()` com migrations versionadas.
-- **Sem outbox transacional** â€” usuÃ¡rio Ã© commitado e o evento Ã© publicado; se o publish falhar, log com erro mas request retorna sucesso. Trade-off documentado no README raiz.
-- **HS256 com secret simÃ©trico** â€” chave distribuÃ­da via Secret K8s. ProduÃ§Ã£o: RS256 com JWKS endpoint.
-- **Soft delete via `IsActive`** â€” preserva histÃ³rico para auditoria.
+- **EF Core + `EnsureCreated()` no startup** — para o desafio acadêmico, evita o ritual de migrations. Em produção: migrar para `Database.Migrate()` com migrations versionadas.
+- **Sem outbox transacional** — usuário é commitado e o evento é publicado; se o publish falhar, log com erro mas request retorna sucesso. Trade-off documentado no README raiz.
+- **HS256 com secret simétrico** — chave distribuída via Secret K8s. Produção: RS256 com JWKS endpoint.
+- **Soft delete via `IsActive`** — preserva histórico para auditoria.
 
