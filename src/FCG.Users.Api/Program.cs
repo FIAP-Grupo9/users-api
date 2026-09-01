@@ -60,7 +60,7 @@ try
     builder.Services.AddScoped<ITokenService, TokenService>();
     builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
-    builder.Services.AddFcgMessaging(builder.Configuration);
+    builder.Services.AddFcgMessaging(builder.Configuration, "users");
 
     var app = builder.Build();
 
