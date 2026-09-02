@@ -36,6 +36,19 @@ Microsserviço responsável por **cadastro, autenticação (JWT)** e **autoriza�
 | PUT | `/api/usuarios/{id}` | autenticado | Atualiza (admin OU próprio usuário) |
 | DELETE | `/api/usuarios/{id}` | role Admin | Soft delete |
 | GET | `/health` | público | Health check |
+| GET | `/metrics` | interno | Métricas no formato Prometheus |
+
+---
+
+## Observabilidade (Fase 3)
+
+O serviço publica métricas em `/metrics`, coletadas pelo Prometheus e exibidas no painel do Grafana: tempo de resposta, volume de requisições por rota e por código HTTP, e taxa de erros. O endereço é interno ao cluster e não é exposto pelo gateway — é tráfego de operação, não de negócio.
+
+## Acesso pelo gateway (Fase 3)
+
+A partir da Fase 3, este serviço não é mais acessado diretamente. Todo o tráfego externo entra pelo gateway em `http://localhost:8000/users/...`, que valida o token antes de encaminhar. O cadastro e o login continuam públicos; as demais rotas exigem token válido.
+
+O serviço **mantém a própria validação de token** como defesa em profundidade: se algo passar indevidamente pelo gateway, a aplicação não fica desprotegida.
 
 Swagger UI em `/swagger` quando `Swagger__Enabled=true`.
 
@@ -45,7 +58,7 @@ Swagger UI em `/swagger` quando `Swagger__Enabled=true`.
 |---|---|---|
 | `UserCreatedEvent` | Após `POST /api/auth/register` ser persistido | `MessageId, OccurredAt, UserId, Name, Email, Role` |
 
-Consumidores conhecidos: **NotificationsAPI** (envia e-mail de boas-vindas).
+Consumidor conhecido: a **função serverless de notificações** (`fcg-notifications-fn`), que envia o e-mail de boas-vindas. Até a Fase 2 esse papel era da NotificationsAPI, um contêiner sempre ligado; na Fase 3 ela foi substituída por uma função que só existe enquanto há mensagem para processar.
 
 ## Eventos consumidos
 
