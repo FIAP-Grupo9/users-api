@@ -12,4 +12,8 @@ data:
   RabbitMq__Host: "rabbitmq"
   RabbitMq__Port: "5672"
   RabbitMq__VirtualHost: "/"
+  # Cria o administrador inicial. Sem ele, um ambiente novo sobe sem ninguem
+  # capaz de cadastrar jogos: nao existe rota para promover um usuario.
+  SeedData__Enabled: "true"
+  SeedData__AdminEmail: "admin@fcg.com"
   Swagger__Enabled: "true"
