@@ -1,6 +1,7 @@
 using FCG.BuildingBlocks.Auth;
 using FCG.BuildingBlocks.Messaging;
 using FCG.BuildingBlocks.Middleware;
+using FCG.BuildingBlocks.Observability;
 using FCG.Users.Api.Application.Services;
 using FCG.Users.Api.Domain.Repositories;
 using FCG.Users.Api.Domain.Services;
@@ -61,6 +62,7 @@ try
     builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
     builder.Services.AddFcgMessaging(builder.Configuration, "users");
+    builder.Services.AddFcgObservability("users-api");
 
     var app = builder.Build();
 
@@ -82,6 +84,7 @@ try
     app.UseAuthorization();
     app.MapControllers();
     app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "UsersAPI" }));
+    app.UseFcgObservability();
 
     app.Run();
 }
