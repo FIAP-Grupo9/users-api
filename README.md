@@ -121,9 +121,20 @@ kubectl port-forward svc/users-api -n fcg 5001:8080
 
 ## Testes
 
+Projeto `tests/FCG.Users.Api.Tests` (xUnit + Moq):
+
 ```powershell
-dotnet test  # (tests aparecem na fase 5)
+dotnet test tests/FCG.Users.Api.Tests/FCG.Users.Api.Tests.csproj
 ```
+
+## CI/CD
+
+GitHub Actions (`.github/workflows/ci.yml`):
+
+- **CI** — em qualquer pull request (não importa a branch de base) e em todo push na `master`: `dotnet restore` + `build` + os testes acima.
+- **CD** — só em push na `master`: build e publicação da imagem Docker em `ghcr.io/fiap-grupo9/users-api` (tags `latest` e `<sha>`), usando o token automático do Actions.
+
+Não há deploy automático: o único ambiente hoje é o Kubernetes/docker-compose local (ver `orchestration`), fora do alcance do GitHub Actions. A imagem fica publicada no registry, pronta para um deploy manual.
 
 ## Decisões arquiteturais
 

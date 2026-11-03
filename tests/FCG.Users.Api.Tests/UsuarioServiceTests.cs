@@ -43,4 +43,16 @@ public class UsuarioServiceTests
         Assert.Equal(409, result.StatusCode);
         _repoMock.Verify(r => r.AddAsync(It.IsAny<Usuario>(), It.IsAny<CancellationToken>()), Times.Never);
     }
+
+    [Fact]
+    public async Task GetUsuarioByIdAsync_NaoEncontrado_RetornaFalha404()
+    {
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Usuario?)null);
+
+        var result = await _service.GetUsuarioByIdAsync(Guid.NewGuid(), "User");
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(404, result.StatusCode);
+    }
 }
