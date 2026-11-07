@@ -137,6 +137,8 @@ GitHub Actions (`.github/workflows/ci.yml`):
 
 Secrets do GitHub usados por este workflow (nível de organização `FIAP-Grupo9`): `AZURE_CREDENTIALS`, `ACR_LOGIN_SERVER`, `AKS_RESOURCE_GROUP`, `AKS_CLUSTER_NAME`, `JWT_SECRET`, `USERS_DB_PASSWORD`, `SEED_ADMIN_PASSWORD`. A infraestrutura compartilhada (Postgres, RabbitMQ, MongoDB, Redis, Elasticsearch, Kong) é aplicada separadamente pelo workflow `deploy-infra.yml` do repositório `orchestration` — ver o README dele.
 
+A imagem aplicada no `Deployment` é sempre a tag `<sha>` do commit (nunca `latest`): isso torna o rollout determinístico — o mesmo `kubectl apply` nunca reaplica uma imagem já em execução por engano, e dá pra rastrear exatamente qual commit está rodando no cluster a qualquer momento.
+
 ## Decisões arquiteturais
 
 - **EF Core + `EnsureCreated()` no startup** — para o desafio acadêmico, evita o ritual de migrations. Em produção: migrar para `Database.Migrate()` com migrations versionadas.
